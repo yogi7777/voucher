@@ -27,8 +27,10 @@ RUN git clone --depth=1 https://github.com/yogi7777/voucher.git /repo \
 
 # Skript hinzufügen, das Umgebungsvariablen setzt
 RUN echo '#!/bin/bash' > /usr/local/bin/docker-entrypoint.sh && \
-    echo 'echo "SetEnv DB_USER \"${DB_USER}\"" > /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'echo "SetEnv DB_PASSWORD \"${DB_PASSWORD}\"" >> /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
+    echo 'echo "SetEnv MYSQL_HOST \"${MYSQL_HOST}\"" > /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
+    echo 'echo "SetEnv MYSQL_DATABASE \"${MYSQL_DATABASE}\"" > /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
+    echo 'echo "SetEnv MYSQL_USER \"${MYSQL_USER}\"" > /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
+    echo 'echo "SetEnv MYSQL_PASSWORD \"${MYSQL_PASSWORD}\"" >> /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
     echo 'exec "$@"' >> /usr/local/bin/docker-entrypoint.sh && \
     chmod +x /usr/local/bin/docker-entrypoint.sh
 
