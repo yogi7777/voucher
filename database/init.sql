@@ -1,4 +1,6 @@
-USE voucher_system;
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS vouchers (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -19,3 +21,5 @@ CREATE TABLE IF NOT EXISTS amounts (
 
 -- Initiale Beträge einfügen
 INSERT INTO amounts (value) VALUES (10.00), (20.00), (50.00);
+
+COMMIT;
