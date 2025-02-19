@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  tickets-web:
+  voucher-web:
     build:
       context: https://github.com/yogi7777/voucher.git#main
       dockerfile: docker/Dockerfile
@@ -36,7 +36,7 @@ services:
     restart: always
 
 networks:
-  tickets-network:
+  voucher-network:
     driver: bridge
 
 volumes:
