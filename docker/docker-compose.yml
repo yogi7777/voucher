@@ -1,36 +1,43 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
-    container_name: voucher-web
+  tickets-web:
+    build:
+      context: https://github.com/yogi7777/voucher.git#main
+      dockerfile: docker/Dockerfile
     ports:
       - "8080:80"
     volumes:
-      - ./src:/var/www/html
+      - app_data:/var/www/html
+    environment:
+      - DB_HOST=db
+      - DB_NAME=voucher
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       - db
-    env_file:
-      - init.env
     networks:
       - voucher-network
+    restart: always
 
   db:
-    image: mariadb:10.6
-    container_name: voucher-db
-    env_file:
-      - init.env
+    build:
+      context: https://github.com/yogi7777/voucher.git#main
+      dockerfile: database/Dockerfile
+    environment:
+      - MYSQL_DATABASE=voucher
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
-      - ./database/setup.sql:/docker-entrypoint-initdb.d/setup.sql
-    ports:
-      - "3306:3306"
     networks:
       - voucher-network
+    restart: always
+
+networks:
+  tickets-network:
+    driver: bridge
 
 volumes:
   db_data:
-
-networks:
-  voucher-network:
-    driver: bridge
