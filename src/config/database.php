@@ -1,8 +1,8 @@
 <?php
-$host = 'db';
-$db   = 'voucher';
-$user = getenv('DB_USER');
-$pass = getenv('DB_PASSWORD');
+$host = getenv('MYSQL_DATABASE');
+$db   = getenv('MYSQL_DB');
+$user = getenv('MYSQL_USER');
+$pass = getenv('MYSQL_PASSWORD');
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
