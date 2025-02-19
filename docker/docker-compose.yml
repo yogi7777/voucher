@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: voucher-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - db
+    env_file:
+      - init.env
+    networks:
+      - voucher-network
+
+  db:
+    image: mariadb:10.6
+    container_name: voucher-db
+    env_file:
+      - init.env
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - voucher-network
+
+volumes:
+  db_data:
+
+networks:
+  voucher-network:
+    driver: bridge

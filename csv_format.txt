@@ -1,0 +1,5 @@
+Format der CSV Datei:
+
+Datum,Seriennummer,Betrag
+2024-02-16,ABC123,10.00
+2024-02-16,DEF456,20.00
