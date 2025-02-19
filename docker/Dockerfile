@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 
 # PHP Extensions
 RUN docker-php-ext-configure \
-    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql
+    && docker-php-ext-install -j$(nproc) pdo pdo_mysql
 
 # Apache Config
 RUN a2enmod rewrite env
