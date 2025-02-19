@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Datepicker Initialisierung
+    // Date picker Initialisierung
     flatpickr("#date-filter", {
         locale: "de",
         dateFormat: "d.m.Y",
