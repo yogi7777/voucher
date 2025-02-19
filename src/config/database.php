@@ -1,8 +1,8 @@
 <?php
-$host = getenv('MARIADB_HOST');
-$db   = getenv('MARIADB_DATABASE');
-$user = getenv('MARIADB_USER');
-$pass = getenv('MARIADB_PASSWORD');
+$host = 'db';
+$db   = 'voucher';
+$user = getenv('DB_USER');
+$pass = getenv('DB_PASSWORD');
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
