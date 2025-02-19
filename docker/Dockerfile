@@ -1,36 +1,39 @@
-# Dockerfile
 FROM php:8.2-apache
 
-# System Dependencies
+# Systemabhängigkeiten installieren
 RUN apt-get update && apt-get install -y \
     git \
+    libzip-dev \
     zip \
     unzip \
-    && rm -rf /var/lib/apt/lists/*
+    gettext-base \
+    && docker-php-ext-install zip pdo pdo_mysql
 
-# PHP Extensions
-RUN docker-php-ext-configure \
-    && docker-php-ext-install -j$(nproc) pdo pdo_mysql
+# Apache-Konfiguration aktivieren
+RUN a2enmod rewrite
+RUN a2enmod env
 
-# Apache Config
-RUN a2enmod rewrite env
-
-# Set working directory
+# Arbeitsverzeichnis setzen
 WORKDIR /var/www/html
 
-# Skript hinzufügen, das Umgebungsvariablen setzt und Repository klont
-RUN echo '#!/bin/bash' > /usr/local/bin/docker-entrypoint.sh && \
-    echo 'echo "SetEnv DB_USER \"${DB_USER}\"" >> /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'echo "SetEnv DB_PASS \"${DB_PASS}\"" >> /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'a2enconf environment' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'if [ -z "$(ls -A /var/www/html)" ]; then' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '    git clone https://github.com/yogi7777/voucher.git .' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo '    chown -R www-data:www-data /var/www/html' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'fi' >> /usr/local/bin/docker-entrypoint.sh && \
-    echo 'apache2-foreground' >> /usr/local/bin/docker-entrypoint.sh && \
-    chmod +x /usr/local/bin/docker-entrypoint.sh
-
-# Set permissions
+# Erstelle benötigte Ordner und setze Berechtigungen
 RUN chown -R www-data:www-data /var/www/html
 
+# Klone das Repository und kopiere den Quellcode in das Apache-Verzeichnis
+RUN git clone --depth=1 https://github.com/yogi7777/voucher.git /repo \
+    && cp -r /repo/src/* /var/www/html/ \
+    && chown -R www-data:www-data /var/www/html \
+    && rm -rf /repo
+
+# Skript hinzufügen, das Umgebungsvariablen setzt
+RUN echo '#!/bin/bash' > /usr/local/bin/docker-entrypoint.sh && \
+    echo 'echo "SetEnv DB_USER \"${DB_USER}\"" > /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
+    echo 'echo "SetEnv DB_PASSWORD \"${DB_PASSWORD}\"" >> /etc/apache2/conf-available/environment.conf' >> /usr/local/bin/docker-entrypoint.sh && \
+    echo 'exec "$@"' >> /usr/local/bin/docker-entrypoint.sh && \
+    chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Docker Entrypoint: Setze die Umgebungsvariablen und starte Apache
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+# Apache-Standardbefehl
+CMD ["apache2-foreground"]
