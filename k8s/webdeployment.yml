@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+spec:
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      volumes:
+        - name: git-repo
+          emptyDir: {}
+        - name: initweb
+          configMap:
+            name: initweb
+            defaultMode: 0755
+      initContainers:
+        - name: git-cloner
+          image: alpine/git
+          command:
+            - sh
+            - -c
+            - git clone https://github.com/yogi7777/voucher.git /git-data
+          volumeMounts:
+            - name: git-repo
+              mountPath: /git-data
+      containers:
+      - name: web
+        image: php:8.2-apache
+        command: 
+          - sh
+          - -c
+          - /usr/local/bin/docker-entrypoint.sh
+        volumeMounts:
+          - name: initweb
+            mountPath: /usr/local/bin/docker-entrypoint.sh
+            subPath: docker-entrypoint.sh
+            readOnly: true
+          - name: git-repo
+            mountPath: /var/www/html
+            subPath: src
+        env:
+        - name: MYSQL_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: voucher-config
+              key: MYSQL_HOST
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: voucher-config
+              key: MYSQL_DATABASE
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: MYSQL_USER
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb
+              key: MYSQL_PASSWORD
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80

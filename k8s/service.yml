@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: voucher-db
+  namespace: voucher
+spec:
+  selector:
+    app: mariadb
+  ports:
+  - port: 3306
+    targetPort: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voucherweb
+spec:
+  selector:
+    app: web
+  ports:
+  - port: 80
+    targetPort: 80
+

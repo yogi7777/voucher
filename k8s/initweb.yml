@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: initweb
+  namespace: voucher
+data:
+  docker-entrypoint.sh: |
+    #!/bin/bash
+    apt-get update
+    apt-get install -y git libzip-dev zip unzip gettext-base
+    docker-php-ext-install zip pdo pdo_mysql
+
+    # Apache-Konfiguration aktivieren
+    a2enmod rewrite
+    a2enmod env
+
+    # Arbeitsverzeichnis setzen
+    cd /var/www/html
+
+    # Erstelle benötigte Ordner und setze Berechtigungen
+    chown -R www-data:www-data /var/www/html
+    echo "SetEnv MYSQL_HOST \"${MYSQL_HOST}\"" > /etc/apache2/conf-available/environment.conf
+    echo "SetEnv MYSQL_DATABASE \"${MYSQL_DATABASE}\"" > /etc/apache2/conf-available/environment.conf
+    echo "SetEnv MYSQL_USER \"${MYSQL_USER}\"" > /etc/apache2/conf-available/environment.conf
+    echo "SetEnv MYSQL_PASSWORD \"${MYSQL_PASSWORD}\"" >> /etc/apache2/conf-available/environment.conf
+    exec apache2-foreground
